@@ -70,9 +70,11 @@ while True:
             del clients[notified_socket]
     except KeyboardInterrupt:
         print("Server is shutting down...")
-        # close all sockets
+        # close all connections
         for client_socket in clients:
             client_socket.close()
         # close tor connection
         controller.close()
+        # close server socket
+        server.close()
         exit()
