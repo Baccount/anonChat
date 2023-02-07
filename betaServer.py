@@ -26,8 +26,8 @@ clients = {}
 def bounce_message(message):
     # send message to all clients except the sender
     for client_socket in clients:
-        client_socket.send(f"{user}: {message}".encode())
-
+        if client_socket != notified_socket:
+            client_socket.send(f"{user}: {message}".encode("utf-8"))
 
 
 
@@ -52,7 +52,7 @@ while True:
                     continue
                 sockets_list.append(client_socket)
                 clients[client_socket] = user
-                print(f"Accepted new connection from {client_address[0]}:{client_address[1]} username:{user}")
+                print(f"Accepted new connection username:{user}")
             else:
                 message = receive_message(notified_socket)
                 # empty message means the client disconnected
@@ -65,9 +65,6 @@ while True:
                 print(f"Received message from {user}: {message}")
                 # send message to all clients
                 bounce_message(message)
-                for client_socket in clients:
-                    if client_socket != notified_socket:
-                        client_socket.send(f"{user}: {message}".encode("utf-8"))
         for notified_socket in exception_sockets:
             sockets_list.remove(notified_socket)
             del clients[notified_socket]

@@ -1,6 +1,8 @@
 import socket
 import socks
 import requests
+import threading
+from time import sleep
 
 # change the color of the text
 def color_str(username, color):
@@ -16,6 +18,16 @@ def color_str(username, color):
         return username
 
 
+
+def receive_message(s):
+    while True:
+        sleep(5)
+        # Receive the message
+        receive = s.recv(4096).decode()
+        # Print the message
+        if receive:
+            print('\n' + receive)
+
 def send_onion_message(username, onion):
     # Socks proxy configuration
     socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, "127.0.0.1", 9050)
@@ -23,22 +35,29 @@ def send_onion_message(username, onion):
 
     # Connect to the Onion network
     try:
+        
         server = (onion, 80)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(server)
         # send the username to the server
         s.send(username.encode())
+        # run seprate thread that receives messages
+        thread = threading.Thread(target=receive_message, args=(s,))
+        thread.start()
         while True:
             # Get the message to send from the user
-            message = input("Enter the message to send: ")
+            message = input(f"{username}: ")
             # Send the message
             s.send(message.encode())
-            # Receive the message
-            message = s.recv(4096).decode()
-            # Print the message
-            print(message)
+            
+            
+            
     except KeyboardInterrupt:
         s.close()
+    except ConnectionResetError:
+        # reset the connection
+        s.close()
+        send_onion_message(username, onion)
     finally:
         s.close()
 
