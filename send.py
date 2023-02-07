@@ -2,14 +2,28 @@ import socket
 import socks
 import requests
 
-def send_onion_message(username):
+# change the color of the text
+def color_str(username, color):
+    if color == "red":
+        return "\033[31m" + username + "\033[0m"
+    elif color == "green":
+        return "\033[32m" + username + "\033[0m"
+    elif color == "yellow":
+        return "\033[33m" + username + "\033[0m"
+    elif color == "blue":
+        return "\033[34m" + username + "\033[0m"
+    else:
+        return username
+
+
+def send_onion_message(username, onion):
     # Socks proxy configuration
     socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, "127.0.0.1", 9050)
     socket.socket = socks.socksocket
 
     # Connect to the Onion network
     try:
-        server = ("bmgwjnxnmzdyhe373grb6mv4423cublw6ot7aziovs53bcbrmrhsnhyd.onion", 80)
+        server = (onion, 80)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(server)
         while True:
@@ -19,12 +33,19 @@ def send_onion_message(username):
             s.send(username.encode() + " : ".encode() + message.encode())
             # Receive the response
             response = s.recv(1024)
-            print("Received response: %s" % response.decode())
+            print(response.decode())
     except KeyboardInterrupt:
+        
         s.close()
     finally:
         s.close()
 
-
+# Get the onion address from the user
+onion = input("Enter the onion address: ")
+# get thew username from the user
+username = input("Enter the username: ")
+# get the color of the username from the user
+color = input("Enter the color of the username: ")
+username = color_str(username, color)
 # Get the message to send from the user
-send_onion_message("testuser")
+send_onion_message(username, onion)
