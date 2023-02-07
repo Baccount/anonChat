@@ -3,6 +3,8 @@ import stem.connection
 from stem import Signal
 from stem.control import Controller
 import socket
+# import sleep
+from time import sleep
 
 # Define the port number to listen on
 port = 8010
@@ -18,21 +20,51 @@ def create_onion_service(debug = False):
         # Start the hidden service
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(("127.0.0.1", port))
-        sock.listen(1)
-        
+        sock.listen(20)
+
+
+
+
+
+
+
+
         print("Listening for incoming connections...")
         try:
+            # handle connection drop
             conn, addr = sock.accept()
             while True:
                 data = conn.recv(1024)
                 print("Received: %s" % data.decode())
-                # bounce the data back to all client with a message
                 conn.send(data)
+                print(data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         except KeyboardInterrupt:
             # close the socket
             print("Closing socket...")
             controller.remove_ephemeral_hidden_service(response.service_id)
             sock.close()
+        except Exception as e:
+            print(e)
         finally:
             # close the socket
             print("Closing socket...")

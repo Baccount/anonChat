@@ -26,16 +26,14 @@ def send_onion_message(username, onion):
         server = (onion, 80)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(server)
+        # send the username to the server
+        s.send(username.encode())
         while True:
             # Get the message to send from the user
             message = input("Enter the message to send: ")
             # Send the message
-            s.send(username.encode() + " : ".encode() + message.encode())
-            # Receive the response
-            response = s.recv(1024)
-            print(response.decode())
+            s.send(message.encode())
     except KeyboardInterrupt:
-        
         s.close()
     finally:
         s.close()
