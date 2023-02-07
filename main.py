@@ -19,14 +19,25 @@ def create_onion_service():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("127.0.0.1", port))
     sock.listen(1)
-
-    # Wait for incoming connections
+    
     print("Listening for incoming connections...")
-    while True:
-      conn, addr = sock.accept()
-      data = conn.recv(1024)
-      print("Received message: %s" % data)
-      message = input("Enter your response: ")
-      conn.send(message.encode())
+    try:
+        conn, addr = sock.accept()
+        while True:
+            data = conn.recv(1024)
+            # return the data to the client with a message 
+    except KeyboardInterrupt:
+        # close the socket
+        print("Closing socket...")
+        controller.remove_ephemeral_hidden_service(response.service_id)
+        sock.close()
 
-create_onion_service()
+
+
+def main():
+    create_onion_service()
+
+
+if __name__ == "__main__":
+    main()
+
