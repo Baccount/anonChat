@@ -38,7 +38,8 @@ def receive_message(client_socket):
     try:
         message = client_socket.recv(4096).decode("utf-8")
         return message
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         return False
 
 while True:

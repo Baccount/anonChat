@@ -1,0 +1,5 @@
+.trunk/.gitignore
+.trunk/trunk.yaml
+.trunk/configs/.flake8
+.trunk/configs/.isort.cfg
+__pycache__/send.cpython-39.pyc
