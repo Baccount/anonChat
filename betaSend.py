@@ -12,5 +12,8 @@ while True:
         break
     print(message)
     client_socket.send(input().encode("utf-8"))
+    # receive message from server
+    if message != "username":
+        client_socket.send(input("Enter your username: ").encode("utf-8"))    
 
 client_socket.close()

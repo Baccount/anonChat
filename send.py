@@ -33,6 +33,10 @@ def send_onion_message(username, onion):
             message = input("Enter the message to send: ")
             # Send the message
             s.send(message.encode())
+            # Receive the message
+            message = s.recv(4096).decode()
+            # Print the message
+            print(message)
     except KeyboardInterrupt:
         s.close()
     finally:
