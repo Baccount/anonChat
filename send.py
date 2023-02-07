@@ -27,13 +27,11 @@ def receive_message(s):
 
 
 def send_onion_message(username, onion):
-    # Socks proxy configuration
-    socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, "127.0.0.1", 9050)
-    socket.socket = socks.socksocket
-
     # Connect to the Onion network
     try:
-        
+        # Socks proxy configuration
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, "127.0.0.1", 9050)
+        socket.socket = socks.socksocket
         server = (onion, 80)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(server)

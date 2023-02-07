@@ -1,19 +1,25 @@
 import socket
 import select
 from stem.control import Controller
+from random import randint
 
-port = 8010
+port = randint(10000, 65535)
 controller = Controller.from_port(port = 9051)
 controller.authenticate()
 
 # Create a new hidden service
 response = controller.create_ephemeral_hidden_service({80: port}, await_publication = True)
 print("Hostname (onion address): %s" % response.service_id + ".onion")
+try:
+    # Start the server
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(("127.0.0.1", port))
+    server.listen()
+except ConnectionResetError:
+    print("Connection reset error")
+    server.close()
+    exit()
 
-# Start the hidden service
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("127.0.0.1", port))
-server.listen()
 
 sockets_list = [server]
 clients = {}
