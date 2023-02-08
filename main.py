@@ -14,4 +14,8 @@ username = input("Enter the username: ")
 color = input("Enter the color of the username: ")
 username = color_str(username, color)
 # Get the message to send from the user
-send_onion_message(username, onion)
+try:
+    send_onion_message(username, onion)
+except KeyboardInterrupt:
+    print("Exiting...")
+    exit()

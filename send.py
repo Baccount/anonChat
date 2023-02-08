@@ -3,6 +3,9 @@ import socks
 import threading
 
 
+
+shutdown_flag = False
+
 # change the color of the text
 def color_str(username, color):
     if color == "red":
@@ -16,14 +19,21 @@ def color_str(username, color):
     else:
         return username
 
-def receive_message(s):
+def receive_message(s, username, onion):
     while True:
-        # Receive the message
-        receive = s.recv(4096).decode()
-        # Print the message
-        if receive:
-            print('\n' + receive)
-
+        try:
+            # Receive the message
+            receive = s.recv(4096).decode()
+            # Print the message
+            if receive:
+                print('\r' + receive)
+        except KeyboardInterrupt:
+            break
+        except ConnectionResetError:
+            # reset the connection
+            #s.close()
+            send_onion_message(username, onion)
+            break
 
 
 def send_onion_message(username, onion):
@@ -38,21 +48,21 @@ def send_onion_message(username, onion):
         # send the username to the server
         s.send(username.encode())
         # run seprate thread that receives messages
-        thread = threading.Thread(target=receive_message, args=(s,))
+        thread = threading.Thread(target=receive_message, args=(s, username, onion,))
         thread.start()
         while True:
             # Get the message to send from the user
-            message = input(f"{username}: ")
+            message = input(f"(me) {username}: ")
             # Send the message
             s.send(message.encode())
-            
-            
-            
-    except KeyboardInterrupt:
-        s.close()
     except ConnectionResetError:
         # reset the connection
-        s.close()
+        #s.close()
+        print("Connection reset error")
         send_onion_message(username, onion)
+    except KeyboardInterrupt:
+        print("Keyboard Interrupt, shutting down")
+        thread.join()
     finally:
+        # close the socket
         s.close()
